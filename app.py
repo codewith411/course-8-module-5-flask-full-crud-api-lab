@@ -10,7 +10,10 @@ class Event:
         self.title = title
 
     def to_dict(self):
-        return {"id": self.id, "title": self.title}
+        return {
+            "id": self.id,
+            "title": self.title
+        }
 
 
 # In-memory "database"
@@ -23,32 +26,44 @@ events = [
 # Welcome route
 @app.route("/")
 def home():
-    return jsonify({"message": "Welcome to the Event API"})
+    return jsonify({
+        "message": "Welcome to the Event API"
+    })
 
 
 # GET /events - Return all events
 @app.route("/events", methods=["GET"])
 def get_events():
-    return jsonify([event.to_dict() for event in events])
+    return jsonify([
+        event.to_dict()
+        for event in events
+    ])
 
 
 # POST /events - Create a new event
 @app.route("/events", methods=["POST"])
 def create_event():
-    data = request.get_json()
+    data = request.get_json(silent=True)
 
     # Make sure JSON data was provided
     if not data:
-        return jsonify({"error": "Request body is required"}), 400
+        return jsonify({
+            "error": "Request body is required"
+        }), 400
 
     # Make sure title was provided
     title = data.get("title")
 
     if not title:
-        return jsonify({"error": "Title is required"}), 400
+        return jsonify({
+            "error": "Title is required"
+        }), 400
 
     # Generate a new ID
-    new_id = max((event.id for event in events), default=0) + 1
+    new_id = max(
+        (event.id for event in events),
+        default=0
+    ) + 1
 
     # Create the new event
     new_event = Event(new_id, title)
@@ -70,19 +85,25 @@ def update_event(event_id):
 
     # Return 404 if the event does not exist
     if event is None:
-        return jsonify({"error": "Event not found"}), 404
+        return jsonify({
+            "error": "Event not found"
+        }), 404
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
 
     # Make sure JSON data was provided
     if not data:
-        return jsonify({"error": "Request body is required"}), 400
+        return jsonify({
+            "error": "Request body is required"
+        }), 400
 
     # Make sure title was provided
     title = data.get("title")
 
     if not title:
-        return jsonify({"error": "Title is required"}), 400
+        return jsonify({
+            "error": "Title is required"
+        }), 400
 
     # Update the event
     event.title = title
@@ -101,7 +122,9 @@ def delete_event(event_id):
 
     # Return 404 if the event does not exist
     if event is None:
-        return jsonify({"error": "Event not found"}), 404
+        return jsonify({
+            "error": "Event not found"
+        }), 404
 
     # Remove the event from the in-memory database
     events.remove(event)
